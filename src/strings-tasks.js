@@ -20,7 +20,7 @@
  *   getStringLength(undefined) => 0
  */
 function getStringLength(value) {
-  return value.length;
+  return value ? value.length : 0;
 }
 
 /**
@@ -57,13 +57,7 @@ function isString(value) {
  *   concatenateStrings('', 'bb') => 'bb'
  */
 function concatenateStrings(value1, value2) {
-  if (value1 === '') {
-    return value2;
-  }
-  if (value2 === '') {
-    return value1;
-  }
-  return value1 + value2;
+  return value1.concat(value2);
 }
 
 /**
@@ -78,7 +72,7 @@ function concatenateStrings(value1, value2) {
  *   getFirstChar('') => ''
  */
 function getFirstChar(value) {
-  return value[0];
+  return value.charAt(0);
 }
 
 /**
@@ -108,7 +102,7 @@ function removeLeadingAndTrailingWhitespaces(value) {
  *   removeLeadingWhitespaces('\t\t\tHello, World! ') => 'Hello, World! '
  */
 function removeLeadingWhitespaces(value) {
-  return value.trim();
+  return value.trimStart();
 }
 
 /**
@@ -140,7 +134,7 @@ function removeTrailingWhitespaces(value) {
  *   repeatString('abc', -2) => ''
  */
 function repeatString(value, count) {
-  return value.repeat(count);
+  return count > 0 ? value.repeat(count) : '';
 }
 
 /**
@@ -156,7 +150,10 @@ function repeatString(value, count) {
  *   removeFirstOccurrences('ABABAB', 'BA') => 'ABAB'.
  */
 function removeFirstOccurrences(str, value) {
-  return str.replace(value, '');
+  const substring = str.indexOf(value);
+  const strHalf1 = str.slice(0, substring);
+  const strHalf2 = str.slice(substring + value.length);
+  return substring < 0 ? str : strHalf1.concat(strHalf2);
 }
 
 /**
@@ -244,8 +241,8 @@ function endsWith(str, substr) {
  */
 function formatTime(minutes, seconds) {
   const min = minutes.toString().padStart(2, '0');
-  const sec = seconds.toString().padEnd(2, '0');
-  return `${min}:${sec}`
+  const sec = seconds.toString().padStart(2, '0');
+  return `${min}:${sec}`;
 }
 
 /**
@@ -309,7 +306,7 @@ function containsSubstring(str, substring) {
  */
 function countVowels(str) {
   const check = ['a', 'e', 'i', 'o', 'u', 'y'];
-  const arr =  str.toLowerCase().split('');
+  const arr = str.toLowerCase().split('');
   let result = 0;
   for (let i = 0; i < arr.length; i += 1) {
     if (check.includes(arr[i])) result += 1;
@@ -331,7 +328,7 @@ function countVowels(str) {
  *   isPalindrome('No lemon, no melon') => true
  */
 function isPalindrome(str) {
-  const withoutSpace = str.replaceAll(' ', '').toLocaleLowerCase()
+  const withoutSpace = str.replaceAll(/\W/gim, '').toLocaleLowerCase();
   const origin = withoutSpace;
   const reverse = reverseString(withoutSpace);
   return origin === reverse;
@@ -351,15 +348,10 @@ function isPalindrome(str) {
  */
 function findLongestWord(sentence) {
   const arr = sentence.split(' ');
-  let check = 0;
-  let index;
-  for (let i = 0; i < arr.length; i += 1) {
-    if (check < arr[i].length) {
-      check = arr[i].length;
-      index = i;
-    }
-  }
-  return arr[index];
+  const arrLenghts = [];
+  arr.forEach((q) => arrLenghts.push(q.length));
+  const maxLenght = Math.max(...arrLenghts);
+  return arr[arrLenghts.indexOf(maxLenght)];
 }
 
 /**
@@ -390,12 +382,11 @@ function reverseWords(str) {
  */
 function invertCase(str) {
   const a = str.split('');
-  return a.map((q) => {
-    return q === q.toUpperCase()
-      ? q.toLowerCase()
-      : q.toUpperCase();
-  })
-  .join('');
+  return a
+    .map((q) => {
+      return q === q.toUpperCase() ? q.toLowerCase() : q.toUpperCase();
+    })
+    .join('');
 }
 
 /**
@@ -518,7 +509,60 @@ function encodeToRot13(str) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-  const cards = ['A♣', '2♣', '3♣', '4♣', '5♣', '6♣', '7♣', '8♣', '9♣', '10♣', 'J♣', 'Q♣', 'K♣', 'A♦', '2♦', '3♦', '4♦', '5♦', '6♦', '7♦', '8♦', '9♦', '10♦', 'J♦', 'Q♦', 'K♦', 'A♥', '2♥', '3♥', '4♥', '5♥', '6♥', '7♥', '8♥', '9♥', '10♥', 'J♥', 'Q♥', 'K♥', 'A♠', '2♠', '3♠', '4♠', '5♠', '6♠', '7♠', '8♠', '9♠', '10♠', 'J♠', 'Q♠', 'K♠'];
+  const cards = [
+    'A♣',
+    '2♣',
+    '3♣',
+    '4♣',
+    '5♣',
+    '6♣',
+    '7♣',
+    '8♣',
+    '9♣',
+    '10♣',
+    'J♣',
+    'Q♣',
+    'K♣',
+    'A♦',
+    '2♦',
+    '3♦',
+    '4♦',
+    '5♦',
+    '6♦',
+    '7♦',
+    '8♦',
+    '9♦',
+    '10♦',
+    'J♦',
+    'Q♦',
+    'K♦',
+    'A♥',
+    '2♥',
+    '3♥',
+    '4♥',
+    '5♥',
+    '6♥',
+    '7♥',
+    '8♥',
+    '9♥',
+    '10♥',
+    'J♥',
+    'Q♥',
+    'K♥',
+    'A♠',
+    '2♠',
+    '3♠',
+    '4♠',
+    '5♠',
+    '6♠',
+    '7♠',
+    '8♠',
+    '9♠',
+    '10♠',
+    'J♠',
+    'Q♠',
+    'K♠',
+  ];
   return cards.indexOf(value);
 }
 
